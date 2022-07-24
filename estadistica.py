@@ -81,7 +81,9 @@ class Estadistica:
         f = b * math.exp((-1*(dato-u)**2)/(2*s**2))
         return f
 
-    #Funciones utilizadas en estadística bidimensional
+    #Funciones utilizadas en estadística bidimensional************************
+
+
     def tabla_dist_frec_bidi(self, datos:list) -> pd.DataFrame:
         '''Función encargada de encontrar la tabla de
         distribución de frecuencias bidimensional de la variable
@@ -210,4 +212,59 @@ class Estadistica:
         y = y_mean + (s_xy/varianza_x)*(valor_x-x_mean)
         return y
 
+
+#Funciones utilizadas en correlaciones***********************************
+
+
+    def coeficiente_determinacion(self, x:pd.Series, y:pd.Series, y_pre:pd.Series) -> double:
+        '''Calcula el coeficiente de determinación (r^2) a partir de los datos suministrados
+        en los parámetrods.
         
+        Parámetros:
+        
+        x: Serie de valores de la variable x
+        
+        y: Serie de valores de la variable y
+        
+        y_pre: Serie con los valores de la predicción de y con la
+        recta de regresión
+        
+        Valor de retorno:
+        
+        Retorna el valor calculado de r^2'''
+
+        #Encontrando la varianza residual muestral
+        v_res = 0
+        suma_1 = 0
+        n = x.size
+        for j in range(n):
+            suma_1 += (y[j]-y_pre[j])**2
+        s_ry = (1/n)*suma_1
+        #Calculando la varianza de y
+        s_y = y.var()
+        #Calculando el coeficiente de determinación lineal
+        r_cua = 1 - (s_ry/s_y)
+        return round(r_cua, 2)
+
+    
+    def coef_correl_lineal(self, x:pd.Series, y:pd.Series, y_pre:pd.Series) -> double:
+        '''Calcula el coeficiente de correlación lineal a partir de los datos suministrados
+        en los parámetrods.
+        
+        Parámetros:
+        
+        x: Serie de valores de la variable x
+        
+        y: Serie de valores de la variable y
+        
+        y_pre: Serie con los valores de la predicción de y con la
+        recta de regresión
+        
+        Valor de retorno:
+        
+        Retorna el valor calculado del coeficiente'''
+        s_xy = x.cov(y)
+        s_x = x.std()
+        s_y = y.std()
+        r = s_xy/(s_x*s_y)
+        return r
