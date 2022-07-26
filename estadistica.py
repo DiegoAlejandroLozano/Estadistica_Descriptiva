@@ -4,6 +4,8 @@ import math
 from matplotlib import pyplot as plt
 import statistics
 
+from zmq import XPUB_NODROP
+
 
 class Estadistica:
     '''Modulo básico de estadística'''    
@@ -268,3 +270,79 @@ class Estadistica:
         s_y = y.std()
         r = s_xy/(s_x*s_y)
         return r
+
+
+#Funciones utilizadas en regresión de modelos no lineales***********************************
+
+
+    def funcion_logaritmica(self, valores_x:pd.Series, valores_y:pd.Series) -> list:
+        '''Función encargada de realizar la predicción de los valores de y de una función
+        logaritmica, a través de regresión de modelos no lineales por el método de cambio
+        de variable:
+        
+        y = a + b*log(x)
+        
+        Parámetros de entrada:
+        
+        valores_x: Serie de valores de la variables x
+        
+        valores_y: Serie de valores de la variable y
+        
+        Valor de retorno:
+        
+        Se retorna un array con los valores de la predicción de la variable y'''
+        t = valores_x.apply(math.log10)
+        y_pre = []
+        for i in t:
+            y = self.recta_regresion(t, valores_y, i)
+            y_pre.append(y)
+        return y_pre
+
+
+    def funcion_exponencial(self, valores_x:pd.Series, valores_y:pd.Series) -> list:
+        '''Función encargada de realizar la predicción de los valores de y de una función
+        exponencial, a través de regresión de modelos no lineales por el método de cambio
+        de variable:
+        
+        y = a*e^(bx)
+        
+        Parámetros de entrada:
+        
+        valores_x: Serie de valores de la variables x
+        
+        valores_y: Serie de valores de la variable y
+        
+        Valor de retorno:
+        
+        Se retorna un array con los valores de la predicción de la variable y'''
+        y_pri = valores_y.apply(math.log)
+        y_predic = []
+        for i in valores_x:
+            y = self.recta_regresion(valores_x, y_pri, i)
+            y_predic.append(math.exp(y))
+        return y_predic
+
+
+    def funcion_potencia(self, valores_x:pd.Series, valores_y:pd.Series) -> list:
+        '''Función encargada de realizar la predicción de los valores de y de una función
+        potencia, a través de regresión de modelos no lineales por el método de cambio
+        de variable:
+        
+        y = a*x^b
+        
+        Parámetros de entrada:
+        
+        valores_x: Serie de valores de la variables x
+        
+        valores_y: Serie de valores de la variable y
+        
+        Valor de retorno:
+        
+        Se retorna un array con los valores de la predicción de la variable y'''
+        y_pri = valores_y.apply(math.log10)
+        x_pri = valores_x.apply(math.log10)
+        y_predi = []
+        for i in x_pri:
+            y = self.recta_regresion(x_pri, y_pri, i)
+            y_predi.append(10**y)
+        return y_predi
